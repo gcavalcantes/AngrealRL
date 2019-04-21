@@ -1,5 +1,5 @@
 # AngrealRL
-Roguelike made with __Python__ and __libtcod__. 
+Roguelike made in __Python 3__ with __libtcod__. 
 
 ### Inspiration
 This project was initially made with the help of the [Roguelike Tutorial Revised](http://rogueliketutorials.com/ "Roguelike Tutorial Revised") for Python 3. It is now being expanded as a personnal free time project.
@@ -7,12 +7,20 @@ This project was initially made with the help of the [Roguelike Tutorial Revised
 ### Theme & Setting
 As a long time fan of the __Wheel of Time__ book series by __Robert Jordan__, I'm deeply annoyed by the lack of video games with the series as a setting. This is the main reason I've decided to make Randland the setting for this game.
 
+### System Requirements 
+- Python 3
+Please bear in mind that this program has not been tested on Windows or Mac. There are plans to test it on Windows in the future.
+
+### Starting the game
+Execute the file __engine.py__ .
+
 ### Controls
 As of now, the game uses vim-like keys for movement and requires both mouse and keyboard to play.
 
 #### Movement
-> __h, j, k ,l__ for left, down, up, right moves.
-> __y, u, n ,m__ for up-right, up-left, down-right, down-left moves.
+> __h, j, k ,l__ for left, down, up, right moves, respectively.
+> __y, u, n ,m__ for up-right, up-left, down-right, down-left moves, respectively.
+> Execute a __basic attack__ by moving into an enemy.
 
 #### Attack
 > Move into a target to make a basic melee attack.

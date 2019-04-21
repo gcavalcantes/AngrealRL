@@ -146,6 +146,7 @@ def main():
 
                     for enemy_turn_result in enemy_turn_results:
                         message = enemy_turn_result.get('message')
+                        # If the entity dies, changes the enemy status to 'dead'
                         dead_entity = enemy_turn_result.get('dead')
 
                         if message:
