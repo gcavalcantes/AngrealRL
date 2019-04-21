@@ -9,6 +9,7 @@ As a long time fan of the __Wheel of Time__ book series by __Robert Jordan__, I'
 
 ### System Requirements 
 - Python 3
+
 Please bear in mind that this program has not been tested on Windows or Mac. There are plans to test it on Windows in the future.
 
 ### Starting the game
@@ -19,11 +20,14 @@ As of now, the game uses vim-like keys for movement and requires both mouse and 
 
 #### Movement
 > __h, j, k ,l__ for left, down, up, right moves, respectively.
+
 > __y, u, n ,m__ for up-right, up-left, down-right, down-left moves, respectively.
+
 > Execute a __basic attack__ by moving into an enemy.
 
 #### Attack
 > Move into a target to make a basic melee attack.
+
 > Offensive items can be used by selecting them in the inventory menu.
 
 #### Inventory Menu
