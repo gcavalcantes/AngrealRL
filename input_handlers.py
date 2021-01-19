@@ -1,5 +1,10 @@
 import libtcodpy as libtcod
 
+'''
+This file is responsable for handling the input keys of the user.
+'''
+
+
 def handle_keys(key):
     # Movement keys
     key_char = chr(key.c)
@@ -21,14 +26,15 @@ def handle_keys(key):
     elif key_char == 'n':
         return {'move': (1, 1)}
 
+# If the user hits the enter key
     if key.vk == libtcod.KEY_ENTER and key.lalt:
         # Alt+Enter: toggle full screen
         return {'fullscreen': True}
 
+# If the user hits the escape key
     elif key.vk == libtcod.KEY_ESCAPE:
         # Exit the game
         return {'exit': True}
 
     # No key was pressed
     return {}
-

@@ -1,6 +1,8 @@
 import libtcodpy as libtcod
 import textwrap
-
+'''
+This file handles the messages that appear in the message board.
+'''
 class Message:
     def __init__(self, text, color = libtcod.white):
         self.text = text

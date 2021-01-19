@@ -13,6 +13,8 @@ from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all, RenderOrder
 
 # Main function
+
+
 def main():
     # Variables that define the screen size.
     screen_width = 80
@@ -30,7 +32,7 @@ def main():
 
     room_max_size = 10
     room_min_size = 6
-    max_rooms= 30
+    max_rooms = 30
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -40,27 +42,31 @@ def main():
 
     colors = {
         'dark_wall': libtcod.Color(0, 0, 100),
-        'dark_ground': libtcod.Color(50,50, 150),
+        'dark_ground': libtcod.Color(50, 50, 150),
         'light_wall': libtcod.Color(130, 110, 50),
-        'light_ground': libtcod.Color(200,180, 50)
+        'light_ground': libtcod.Color(200, 180, 50)
     }
 
     fighter_component = Fighter(hp=30, defense=2, power=5)
     # Keeps track of the player's position at all times.
-    player = Entity(0, 0, '@', libtcod.white, 'Player', blocks = True, render_order=RenderOrder.ACTOR, fighter=fighter_component)
+    player = Entity(0, 0, '@', libtcod.white, 'Player', blocks=True,
+                    render_order=RenderOrder.ACTOR, fighter=fighter_component)
     entities = [player]
 
     # Tells libtcod which font to use.
-    libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+    libtcod.console_set_custom_font(
+        'arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 
     # Creates the screen with a title.
-    libtcod.console_init_root(screen_width, screen_height, 'AngrealRL version T0.01', False)
+    libtcod.console_init_root(
+        screen_width, screen_height, 'AngrealRL version T0.01', False)
 
     con = libtcod.console_new(screen_width, screen_height)
     panel = libtcod.console_new(screen_width, panel_height)
 
     game_map = GameMap(map_width, map_height)
-    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room)
+    game_map.make_map(max_rooms, room_min_size, room_max_size,
+                      map_width, map_height, player, entities, max_monsters_per_room)
 
     fov_recompute = True
 
@@ -80,11 +86,12 @@ def main():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
 
         if fov_recompute:
-            recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
-
+            recompute_fov(fov_map, player.x, player.y, fov_radius,
+                          fov_light_walls, fov_algorithm)
 
         # Print the '@' symbol, set it to the position set by two parameters and set the backgroung to 'none'.
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors)
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log,
+                   screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors)
 
         fov_recompute = False
 
@@ -102,21 +109,22 @@ def main():
         player_turn_results = []
 
         if move and game_state == GameStates.PLAYER_TURN:
-           dx, dy = move
-           destination_x = player.x + dx
-           destination_y = player.y + dy
+            dx, dy = move
+            destination_x = player.x + dx
+            destination_y = player.y + dy
 
-           if not game_map.is_blocked(destination_x, destination_y):
-               target = get_blocking_entities_at_location(entities, destination_x, destination_y)
+            if not game_map.is_blocked(destination_x, destination_y):
+                target = get_blocking_entities_at_location(
+                    entities, destination_x, destination_y)
 
-               if target:
-                   attack_results = player.fighter.attack(target)
-                   player_turn_results = player.fighter.attack(target)
-               else:
-                   player.move(dx, dy)
-                   fov_recompute = True
+                if target:
+                    attack_results = player.fighter.attack(target)
+                    player_turn_results = player.fighter.attack(target)
+                else:
+                    player.move(dx, dy)
+                    fov_recompute = True
 
-               game_state = GameStates.ENEMY_TURN
+                game_state = GameStates.ENEMY_TURN
 
         if exit:
             return True
@@ -142,7 +150,8 @@ def main():
         if game_state == GameStates.ENEMY_TURN:
             for entity in entities:
                 if entity.ai:
-                    enemy_turn_results = entity.ai.take_turn(player, fov_map, game_map, entities)
+                    enemy_turn_results = entity.ai.take_turn(
+                        player, fov_map, game_map, entities)
 
                     for enemy_turn_result in enemy_turn_results:
                         message = enemy_turn_result.get('message')
@@ -167,6 +176,7 @@ def main():
                         break
             else:
                 game_state = GameStates.PLAYER_TURN
+
 
 if __name__ == '__main__':
     main()
