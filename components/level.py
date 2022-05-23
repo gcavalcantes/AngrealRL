@@ -73,4 +73,6 @@ class Level(BaseComponent):
 
         self.engine.message_log.add_message("Your movements are getting swifter!")
 
+        self.increase_level()
+
     
