@@ -1,5 +1,5 @@
 from components.ai import HostileEnemy
-from components import consumable
+from components import consumable, equippable
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
@@ -24,6 +24,7 @@ orc = Actor(
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35),
 )
+
 troll = Actor(
     char="T",
     color=(0, 127, 0),
@@ -60,4 +61,32 @@ lighting_scroll = Item(
     color=(225, 255, 0),
     name="Lighting Scroll",
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),
+)
+
+dagger = Item(
+    char="/", 
+    color=(0, 192, 255), 
+    name="Dagger", 
+    equippable=equippable.Dagger()
+)
+
+sword = Item(
+    char="/", 
+    color=(0, 191, 255), 
+    name="Sword", 
+    equippable=equippable.Sword()
+)
+
+leather_armor = Item(
+    char="[",
+    color=(139, 69, 19),
+    name="Leather Armor",
+    equippable=equippable.LeatherArmor(),
+)
+
+chain_mail = Item(
+    char="[", 
+    color=(139, 69, 19), 
+    name="Chain Mail", 
+    equippable=equippable.ChainMail()
 )
