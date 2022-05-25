@@ -1,182 +1,72 @@
-####### AngrealRL #######
-### - Gabriel Cavalcante - ###
-# File responsable for handling the game engine
-import libtcodpy as libtcod
-from components.fighter import Fighter
-from death_functions import kill_monster, kill_player
-from entity import Entity, get_blocking_entities_at_location
-from fov_functions import initialize_fov, recompute_fov
-from game_messages import MessageLog
-from game_states import GameStates
-from input_handlers import handle_keys
-from map_objects.game_map import GameMap
-from render_functions import clear_all, render_all, RenderOrder
+from __future__ import annotations
 
-# Main function
+import lzma
+import pickle
+from typing import TYPE_CHECKING
 
+from tcod.console import Console
+from tcod.map import compute_fov
 
-def main():
-    # Variables that define the screen size.
-    screen_width = 80
-    screen_height = 50
-    bar_width = 20
-    panel_height = 7
-    panel_y = screen_height - panel_height
+import exceptions
+from message_log import MessageLog
+import render_functions
 
-    message_x = bar_width + 2
-    message_width = screen_width - bar_width - 2
-    message_height = panel_height - 1
+if TYPE_CHECKING:
+    from entity import Actor
+    from game_map import GameMap, GameWorld
+    
 
-    map_width = 80
-    map_height = 43
+class Engine:
+    game_map: GameMap
+    game_world: GameWorld
 
-    room_max_size = 10
-    room_min_size = 6
-    max_rooms = 30
+    def __init__(self, player: Actor):
+        self.message_log = MessageLog()
+        self.mouse_location = (0, 0)
+        self.player = player
 
-    fov_algorithm = 0
-    fov_light_walls = True
-    fov_radius = 10
+    def handle_enemy_turns(self) -> None:
+        for entity in set(self.game_map.actors) - {self.player}:
+            if entity.ai:
+                try:
+                    entity.ai.perform()
+                except exceptions.Impossible:
+                    pass # Ignore impossible action exceptions from AI.
 
-    max_monsters_per_room = 3
+    def update_fov(self) -> None:
+        """Recompute the visible area based on the players point of view."""
+        self.game_map.visible[:] = compute_fov(
+            self.game_map.tiles["transparent"],
+            (self.player.x, self.player.y),
+            radius=8,
+        )
+        # If a tile is "visible" it should be added to "explored".
+        self.game_map.explored |= self.game_map.visible
 
-    colors = {
-        'dark_wall': libtcod.Color(0, 0, 100),
-        'dark_ground': libtcod.Color(50, 50, 150),
-        'light_wall': libtcod.Color(130, 110, 50),
-        'light_ground': libtcod.Color(200, 180, 50)
-    }
+    def render(self, console: Console) -> None:
+        self.game_map.render(console)
 
-    fighter_component = Fighter(hp=30, defense=2, power=5)
-    # Keeps track of the player's position at all times.
-    player = Entity(0, 0, '@', libtcod.white, 'Player', blocks=True,
-                    render_order=RenderOrder.ACTOR, fighter=fighter_component)
-    entities = [player]
+        self.message_log.render(console=console, x=21, y=45, width=40, height=5)
 
-    # Tells libtcod which font to use.
-    libtcod.console_set_custom_font(
-        'arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+        render_functions.render_bar(
+            console=console,
+            current_value=self.player.fighter.hp,
+            maximum_value=self.player.fighter.max_hp,
+            total_width=20,
+        )
 
-    # Creates the screen with a title.
-    libtcod.console_init_root(
-        screen_width, screen_height, 'AngrealRL version T0.01', False)
+        render_functions.rende_dungeon_level(
+            console=console, 
+            dungeon_level=self.game_world.current_floor, 
+            location=(0, 47),
+        )
 
-    con = libtcod.console_new(screen_width, screen_height)
-    panel = libtcod.console_new(screen_width, panel_height)
-
-    game_map = GameMap(map_width, map_height)
-    game_map.make_map(max_rooms, room_min_size, room_max_size,
-                      map_width, map_height, player, entities, max_monsters_per_room)
-
-    fov_recompute = True
-
-    fov_map = initialize_fov(game_map)
-
-    message_log = MessageLog(message_x, message_width, message_height)
-
-    # Variables that hold the keyboard and mouse inputs.
-    key = libtcod.Key()
-    mouse = libtcod.Mouse()
-
-    game_state = GameStates.PLAYER_TURN
-
-    # Game loop that will only end if the screen is closed.
-    while not libtcod.console_is_window_closed():
-        # Captures new 'events' (user inputs).
-        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
-
-        if fov_recompute:
-            recompute_fov(fov_map, player.x, player.y, fov_radius,
-                          fov_light_walls, fov_algorithm)
-
-        # Print the '@' symbol, set it to the position set by two parameters and set the backgroung to 'none'.
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log,
-                   screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors)
-
-        fov_recompute = False
-
-        libtcod.console_flush()
-
-        clear_all(con, entities)
-
-        # Allow the game to be 'gracefully' closed by hitting the ESC key.
-        action = handle_keys(key)
-
-        move = action.get('move')
-        exit = action.get('exit')
-        fullscreen = action.get('fullscreen')
-
-        player_turn_results = []
-
-        if move and game_state == GameStates.PLAYER_TURN:
-            dx, dy = move
-            destination_x = player.x + dx
-            destination_y = player.y + dy
-
-            if not game_map.is_blocked(destination_x, destination_y):
-                target = get_blocking_entities_at_location(
-                    entities, destination_x, destination_y)
-
-                if target:
-                    attack_results = player.fighter.attack(target)
-                    player_turn_results = player.fighter.attack(target)
-                else:
-                    player.move(dx, dy)
-                    fov_recompute = True
-
-                game_state = GameStates.ENEMY_TURN
-
-        if exit:
-            return True
-
-        if fullscreen:
-            libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
-
-        for player_turn_result in player_turn_results:
-            message = player_turn_result.get('message')
-            dead_entity = player_turn_result.get('dead')
-
-            if message:
-                message_log.add_message(message)
-
-            if dead_entity:
-                if dead_entity == player:
-                    message, game_state = kill_player(dead_entity)
-                else:
-                    message = kill_monster(dead_entity)
-
-                message_log.add_message(message)
-
-        if game_state == GameStates.ENEMY_TURN:
-            for entity in entities:
-                if entity.ai:
-                    enemy_turn_results = entity.ai.take_turn(
-                        player, fov_map, game_map, entities)
-
-                    for enemy_turn_result in enemy_turn_results:
-                        message = enemy_turn_result.get('message')
-                        # If the entity dies, changes the enemy status to 'dead'
-                        dead_entity = enemy_turn_result.get('dead')
-
-                        if message:
-                            print(message)
-
-                        if dead_entity:
-                            if dead_entity == player:
-                                message, game_state = kill_player(dead_entity)
-                            else:
-                                message = kill_monster(dead_entity)
-
-                            print(message)
-
-                            if game_state == GameStates.PLAYER_DEAD:
-                                break
-
-                    if game_state == GameStates.PLAYER_DEAD:
-                        break
-            else:
-                game_state = GameStates.PLAYER_TURN
-
-
-if __name__ == '__main__':
-    main()
+        render_functions.render_name_at_mouse_location(
+            console=console, x=21, y=44, engine=self
+        )
+    
+    def save_as(self, filename: str) -> None:
+        """Save this Engine instance as a compressed file."""
+        save_data = lzma.compress(pickle.dumps(self))
+        with open(filename, "wb") as f:
+            f.write(save_data)
