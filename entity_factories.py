@@ -17,10 +17,10 @@ player = Actor(
     level=Level(level_up_base=200),
 )
 
-orc = Actor(
-    char="o",
+trolloc = Actor(
+    char="T",
     color=(63, 127, 63),
-    name="Orc",
+    name="Trolloc",
     ai_cls=HostileEnemy,
     equipment=Equipament(),
     fighter=Fighter(hp=10, base_defense=0, base_power=3),
@@ -28,10 +28,10 @@ orc = Actor(
     level=Level(xp_given=35),
 )
 
-troll = Actor(
-    char="T",
+myrddraal = Actor(
+    char="M",
     color=(0, 127, 0),
-    name="Troll",
+    name="Myrddraal",
     ai_cls=HostileEnemy,
     equipment=Equipament(),
     fighter=Fighter(hp=16, base_defense=1, base_power=4),
