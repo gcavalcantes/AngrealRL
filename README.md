@@ -30,8 +30,10 @@ As of now, the game uses vim-like keys for movement and requires both mouse and 
 
 > Offensive items can be used by selecting them in the inventory menu.
 
-#### Inventory Menu
-> The inventory can be accessed by pressing __i__ .
+#### Inventory and Menu
+> Itens on the ground can be picked up with __g__.
+
+> The inventory can be accessed by pressing __i__ . With the inventory menu open, select the corresponding item key to use/equip/unequip it.
 
 #### Dropping items menu
->To drop an item, press __d__ to enter the drop menu and select the item you wish to drop.
+>To drop an item, press __d__ to open the drop menu and select the item you wish to drop.
