@@ -10,7 +10,7 @@ As a long time fan of the __Wheel of Time__ book series by __Robert Jordan__, I'
 ### System Requirements 
 - Python 3.x installed
 
-Please bear in mind that this program has not been tested on Windows or Mac. There are plans to test it on Windows in the future.
+Please bear in mind that this program has not been tested on Mac OS. There are currently no plans to test it on this platform.
 
 ### Starting the game
 Execute the file __engine.py__ .
