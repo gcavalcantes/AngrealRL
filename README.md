@@ -5,7 +5,7 @@ Roguelike made in __Python 3__ with __libtcod__.
 This project was initially made with the help of the [Roguelike Tutorial Revised](http://rogueliketutorials.com/ "Roguelike Tutorial Revised") for Python 3. It is now being expanded as a personnal free time project.
 
 ### Theme & Setting
-As a long time fan of the __Wheel of Time__ book series by __Robert Jordan__, I'm deeply annoyed by the lack of video games with the series as a setting. This is the main reason I decided to make Randland the setting for this game. Bear in mind that at the current state of the game nothing WoT related is implemented yet.
+As a long time fan of the __Wheel of Time__ book series by __Robert Jordan__, I'm deeply annoyed by the lack of video games with the series as a setting. This is the main reason I decided to make Randland the setting for this game. Bear in mind that at the current state of the game only the enemies are WoT related.
 
 ### System Requirements 
 - Python 3.x installed
